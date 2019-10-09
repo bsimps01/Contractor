@@ -3,18 +3,19 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from twilio.twiml.messaging_response import Message, MessagingResponse
 from twilio.rest import Client
+from datetime import datetime
 import os
+
 
 account_sid = ""
 auth_token = ""
-host = os.environ.get()
 client = MongoClient()
 twilio_client = Client(account_sid, auth_token)
-db = client.movies()
-movies = db.movies
-movies.drop()
-carts = db.carts
-carts.drop()
+host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/Playlister')
+client = MongoClient(host=f'{host}?retryWrites=false')
+db = client.get_default_database()
+playlists = db.playlists
+comments = db.comments
 
 app = Flask(__name__)
 response = MessagingResponse()
@@ -27,27 +28,80 @@ db.movies.insert_many([
     {'title': 'Sandlot', 'description': 'A couple kids playing in the backyard until the beast changes everything'},
 ])
 
-print(response)
-
 @app.route('/')
-def cinema_index():
-    """Show all movies"""
-    movies = movies.find()
-    return render_template('cinema_index.html', movies=movies)
+def playlists_index():
+    """Show all playlists."""
+    return render_template('playlists_index.html', playlists=playlists.find())
 
-@app.route('/cinema/cart')
-def cinema_cart():
-    """Added to the cart"""
-    cart = carts.find({'_id': ObjectId(movie)})
-    total_price = list(carts.find())
-    for money in range(len(total_price)):
-        total += total_price[money]
-    return render_template('cinema_cart.html', carts=cart)
+@app.route('/playlists/new')
+def playlists_new():
+    """Create a new playlist."""
+    return render_template('playlists_new.html', playlist={}, title='New Playlist')
 
-@app.route('/movies/<movies_id>/add', methods=['POST'])
-def buy_movie(movies_id):
-    """Adds Movie"""
-    carts.find('_id': ObjectId(movies_id))
-    return render_template('movie_new.html')
+@app.route('/playlists/<playlist_id>', methods=['POST'])
+def playlists_update(playlist_id):
+    """Submit an edited playlist."""
+    updated_playlist = {
+        'title': request.form.get('title'),
+        'description': request.form.get('description'),
+        'videos': request.form.get('videos').split()
+    }
+    playlists.update_one(
+        {'_id': ObjectId(playlist_id)},
+        {'$set': updated_playlist})
+    return redirect(url_for('playlists_show', playlist_id=playlist_id))
+
+
+@app.route('/playlists/<playlist_id>/edit')
+def playlists_edit(playlist_id):
+    """Show the edit form for a playlist."""
+    playlist = playlists.find_one({'_id': ObjectId(playlist_id)})
+    return render_template('playlists_edit.html', playlist=playlist, title='Edit Playlist')
+
+@app.route('/playlists/<playlist_id>/delete', methods=['POST'])
+def playlists_delete(playlist_id):
+    """Delete one playlist."""
+    playlists.delete_one({'_id': ObjectId(playlist_id)})
+    return redirect(url_for('playlists_index'))
+
+@app.route('/playlists/comments', methods=['POST'])
+def comments_new():
+    """Submit a new comment."""
+    comment = {
+        'title': request.form.get('title'),
+        'content': request.form.get('content'),
+        'playlist_id': ObjectId(request.form.get('playlist_id'))
+    }
+    print(comment)
+    comment_id = comments.insert_one(comment).inserted_id
+    return redirect(url_for('playlists_show', playlist_id=request.form.get('playlist_id')))
+
+@app.route('/playlists/<playlist_id>')
+def playlists_show(playlist_id):
+    """Show a single playlist."""
+    playlist = playlists.find_one({'_id': ObjectId(playlist_id)})
+    playlist_comments = comments.find({'playlist_id': ObjectId(playlist_id)})
+    return render_template('playlists_show.html', playlist=playlist, comments=playlist_comments)
+
+@app.route('/playlists/comments/<comment_id>', methods=['POST'])
+def comments_delete(comment_id):
+    """Action to delete a comment."""
+    comment = comments.find_one({'_id': ObjectId(comment_id)})
+    comments.delete_one({'_id': ObjectId(comment_id)})
+    return redirect(url_for('playlists_show', playlist_id=comment.get('playlist_id')))
+
+@app.route('/playlists', methods=['POST'])
+def playlists_submit():
+    """Submit a new playlist."""
+    playlist = {
+        'title': request.form.get('title'),
+        'description': request.form.get('description'),
+        'videos': request.form.get('videos').split(),
+        'created_at': datetime.now()
+    }
+    print(playlist)
+    playlist_id = playlists.insert_one(playlist).inserted_id
+    return redirect(url_for('playlists_show', playlist_id=playlist_id))
+
 if __name__ == '__main__':
-    app.run(debug=True)
+  app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT', 5000))
