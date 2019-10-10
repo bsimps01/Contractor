@@ -1,32 +1,23 @@
 from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from twilio.twiml.messaging_response import Message, MessagingResponse
-from twilio.rest import Client
 from datetime import datetime
 import os
 
-
-account_sid = ""
-auth_token = ""
-client = MongoClient()
-twilio_client = Client(account_sid, auth_token)
-host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/Playlister')
+host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/Contractor')
 client = MongoClient(host=f'{host}?retryWrites=false')
 db = client.get_default_database()
 playlists = db.playlists
 comments = db.comments
 
 app = Flask(__name__)
-response = MessagingResponse()
-response.message("Thank you for your purchase!")
 
-db.movies.insert_many([
-    {'title': 'Star Wars: A New Hope', 'description': 'A fight for the galaxy wages on!'},
-    {'title': 'Dark Knight', 'description': 'Batman fights against the madness of the Joker'},
-    {'title': 'Inception', 'description': 'Mind games are all the same...until your reality is changed'},
-    {'title': 'Sandlot', 'description': 'A couple kids playing in the backyard until the beast changes everything'},
-])
+# db.movies.insert_many([
+#     {'title': 'Star Wars: A New Hope', 'description': 'A fight for the galaxy wages on!'},
+#     {'title': 'Dark Knight', 'description': 'Batman fights against the madness of the Joker'},
+#     {'title': 'Inception', 'description': 'Mind games are all the same...until your reality is changed'},
+#     {'title': 'Sandlot', 'description': 'A couple kids playing in the backyard until the beast changes everything'},
+# ])
 
 @app.route('/')
 def playlists_index():
@@ -36,7 +27,7 @@ def playlists_index():
 @app.route('/playlists/new')
 def playlists_new():
     """Create a new playlist."""
-    return render_template('playlists_new.html', playlist={}, title='New Playlist')
+    return render_template('playlists_new.html', playlist={}, title='Cart')
 
 @app.route('/playlists/<playlist_id>', methods=['POST'])
 def playlists_update(playlist_id):
