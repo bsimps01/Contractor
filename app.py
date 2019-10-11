@@ -21,17 +21,17 @@ app = Flask(__name__)
 
 @app.route('/')
 def playlists_index():
-    """Show all playlists."""
+    """Show all movies."""
     return render_template('playlists_index.html', playlists=playlists.find())
 
 @app.route('/playlists/new')
 def playlists_new():
-    """Create a new playlist."""
+    """Create a new cart option"""
     return render_template('playlists_new.html', playlist={}, title='Cart')
 
 @app.route('/playlists/<playlist_id>', methods=['POST'])
 def playlists_update(playlist_id):
-    """Submit an edited playlist."""
+    """Submit an edited movies list."""
     updated_playlist = {
         'title': request.form.get('title'),
         'description': request.form.get('description'),
