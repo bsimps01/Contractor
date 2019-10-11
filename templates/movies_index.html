@@ -3,12 +3,12 @@
 
 {% block content %}
 <h1>Benji's Cinema</h1>
-<a href='/playlists/new'>Cart</a>
+<a href='/movies/new'>Add to Cart</a>
 <div class='row'>
-        {% for playlist in playlists %}
+        {% for movie in movies %}
             <div class='col-md-3'>
-                <h2><a href='/playlists/{{ playlist._id }}'>{{ playlist.title }}</a></h2>
-                <small>{{ playlist.description }}</small>
+                <h2><a href='/movies/{{ movie._id }}'>{{ movie.title }}</a></h2>
+                <small>{{ movie.description }}</small>
             </div>
         {% endfor %}
     </div>

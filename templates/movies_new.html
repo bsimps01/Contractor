@@ -1,0 +1,32 @@
+<!-- templates/playlists_new.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class='row'>
+        <div class='col-sm-6 col-sm-offset-3'>
+<form method='POST' action='/movies'>
+    {% include 'partials/movies_form.html' %}
+    <fieldset>
+        <legend>Cart</legend>
+        <!-- TITLE -->
+        <p>
+            <label for='movie-title'>Title</label><br>
+            <input id='movie-title' type='text' name='title' />
+        </p>
+
+        <!-- DESCRIPTION -->
+        <p>
+            <label for='description'>Description</label><br>
+            <input id='description' type='text' name='description' />
+        </p>
+    </fieldset>
+    <!-- BUTTON -->
+    <div class='form-group'>
+    <p>
+            <button class='btn btn-primary' type='submit'>Save movie for checkout</button>
+        </div>
+    </p>
+</form>
+</div>
+</div>
+{% endblock %}
