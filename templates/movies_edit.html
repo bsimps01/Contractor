@@ -21,12 +21,15 @@
         </p>
 
         <!-- VIDEO LINKS -->
-        
+        <div class='form-group'>
+                <label for='description'>Image URL</label><br>
+                <textarea class='form-control' id='movie-image' type='text' name='Images' />{{ "\n".join(movies) }}</textarea>
+            </div>
     </fieldset>
     {% include 'partials/movies_form.html' %}
     <!-- BUTTON -->
     <div class='form-group'>
-            <button class='btn btn-primary' type='submit'>Save Playlist</button>
+            <button class='btn btn-primary' type='submit'>Save Movie</button>
         </div>
     </form>
 </div>

@@ -19,6 +19,11 @@
             <label for='description'>Description</label><br>
             <input id='description' type='text' name='description' />
         </p>
+        <div class='form-group'>
+            <label for='description'>Image URL</label><br>
+            <textarea class='form-control' id='movie-image' type='text' name='Images' />{{ "\n".join(movie.Images) }}</textarea>
+        </div>
+        <div class='form-group'>
     </fieldset>
     <!-- BUTTON -->
     <div class='form-group'>

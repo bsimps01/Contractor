@@ -4,7 +4,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import os
 
-host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/Contractor')
+host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/movies')
 client = MongoClient(host=f'{host}?retryWrites=false')
 db = client.get_default_database()
 movies = db.movies
@@ -35,13 +35,13 @@ def movies_update(movie_id):
     updated_movie = {
         'title': request.form.get('title'),
         'description': request.form.get('description'),
-        'Image': request.form.get('Image')
+        'Images': request.form.get('Image')
 
     }
     movies.update_one(
         {'_id': ObjectId(movie_id)},
         {'$set': updated_movie})
-    return redirect(url_for('movies_show', movie_id=movie_id))
+    return redirect(url_for('movies_show', movie_id=movie_id, movies=movies.find()))
 
 @app.route('/movies/<movie_id>/edit')
 def movies_edit(movie_id):
@@ -73,7 +73,7 @@ def movies_show(movie_id):
     """Show a single playlist."""
     movie = movies.find_one({'_id': ObjectId(movie_id)})
     movie_comments = comments.find({'movie_id': ObjectId(movie_id)})
-    return render_template('movies_show.html', movie=movie, comments=movie_comments)
+    return render_template('movies_show.html', movie=movie, comments=movie_comments, movies=movies.find())
 
 @app.route('/movies/comments/<comment_id>', methods=['POST'])
 def comments_delete(comment_id):
@@ -88,13 +88,12 @@ def movies_submit():
     movie = {
         'title': request.form.get('title'),
         'description': request.form.get('description'),
-        'videos': request.form.get('videos', '').split(),
-        'Image': request.form.get('Image'),
+        'Images': request.form.get('Image'),
         'Price': request.form.get('Price'),
         'created_at': datetime.now()
     }
     movie_id = movies.insert_one(movie).inserted_id
-    return redirect(url_for('movies_show', movie_id=movie_id))
+    return redirect(url_for('movies_show', movie_id=movie_id, movies=movies.find()))
 
 if __name__ == '__main__':
   app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT', 5000))

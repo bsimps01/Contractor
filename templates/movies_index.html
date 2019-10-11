@@ -3,13 +3,42 @@
 
 {% block content %}
 <h1>Benji's Cinema</h1>
-<img src="{{ movies.Image }}" style="width: 100% !important;" alt="">
-<a href='/movies/new'>Add to Cart</a>
+<div class="image">
+    <a href="/movies/new">
+        <br>
+        <h2>Avengers: Endgame</h2>
+        <img src='/static/AVENGERS-ENDGAME.jpg' width="500" height="auto"></img>
+        <a href="/movies/new">Add to Cart</a>
+        </br>
+        <a href="/movies/new">
+        <h2>Inception</h2>
+        <img src='/static/Inception.jpg' width="500" height="auto"></img>
+        <a href="/movies/new">Add to Cart</a>
+        <a href="/movies/new">
+        <h2>Sandlot</h2>
+        <img src='/static/Sandlot.jpg' width="500" height="auto"></img>
+        <a href="/movies/new">Add to Cart</a>
+        <a href="/movies/new">
+        <h2>Wonder Woman</h2>
+        <img src='/static/WonderWoman.jpg' width="500" height="auto"></img>
+        <a href="/movies/new">Add to Cart</a>
+        <a href="/movies/new">
+        <h2>The Dark Knight</h2>
+        <img src='/static/Batman.jpg' width="500" height="auto"></img>
+        <a href="/movies/new">Add to Cart</a>
+        <a href="/movies/new">
+        <h2>Green Book</h2>
+        <img src='/static/GreenBook.jpg' width="500" height="auto"></img>
+    </a>
+    <br>
+<a href="/movies/new">Add to Cart</a>
+</br>
 <div class='row'>
         {% for movie in movies %}
             <div class='col-md-3'>
                 <h2><a href='/movies/{{ movie._id }}'>{{ movie.title }}</a></h2>
                 <small>{{ movie.description }}</small>
+
             </div>
         {% endfor %}
     </div>
