@@ -35,7 +35,8 @@ def movies_update(movie_id):
     updated_movie = {
         'title': request.form.get('title'),
         'description': request.form.get('description'),
-        'videos': request.form.get('videos').split()
+        'Image': request.form.get('Image')
+
     }
     movies.update_one(
         {'_id': ObjectId(movie_id)},
@@ -88,9 +89,10 @@ def movies_submit():
         'title': request.form.get('title'),
         'description': request.form.get('description'),
         'videos': request.form.get('videos', '').split(),
+        'Image': request.form.get('Image'),
+        'Price': request.form.get('Price'),
         'created_at': datetime.now()
     }
-    print(movie)
     movie_id = movies.insert_one(movie).inserted_id
     return redirect(url_for('movies_show', movie_id=movie_id))
 
